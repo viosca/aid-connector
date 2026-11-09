@@ -52,6 +52,21 @@ async function runTests() {
     assert(connected, "Should establish connection with AI Dungeon GraphQL endpoint");
     console.log("  ✔ Passed: AI Dungeon API is reachable.");
 
+    // Test 5: Local Dev Bridge server lifecycle
+    console.log("• Test 5: Local Dev Bridge server startup and /status endpoint...");
+    const { startBridge } = require("../src/bridge");
+    const testBridgePort = 8798;
+    const bridgeServer = startBridge(testBridgePort);
+    try {
+        const bRes = await fetch(`http://127.0.0.1:${testBridgePort}/status`);
+        assert.strictEqual(bRes.status, 200);
+        const bData = await bRes.json();
+        assert.strictEqual(bData.status, "active");
+        console.log("  ✔ Passed: Local Dev Bridge responds on port " + testBridgePort);
+    } finally {
+        bridgeServer.close();
+    }
+
     console.log("------------------------------------------------------------------");
     console.log("🎉 ALL TESTS PASSED (100% OPERATIONAL)");
     console.log("==================================================================");

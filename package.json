@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "test": "node test/test_connection.js",
-    "verify": "node scripts/verify_auth.js"
+    "verify": "node scripts/verify_auth.js",
+    "login": "node scripts/login.js",
+    "bridge": "node scripts/bridge.js"
   },
   "keywords": [
     "ai-dungeon",
