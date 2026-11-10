@@ -122,6 +122,10 @@ class AIDClient {
                     publicId
                     shortId
                     scenarioId
+                    scenario {
+                        id
+                        shortId
+                    }
                     title
                     description
                     actionCount
