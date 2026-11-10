@@ -244,6 +244,36 @@ class AIDClient {
     }
 
     /**
+     * Update scenario details (title, description, prompt, instructions, memory, etc.)
+     * @param {Object} input - ScenarioInput (must include shortId)
+     * @returns {Promise<any>}
+     */
+    async updateScenario(input) {
+        const query = `
+            mutation UpdateScenario($input: ScenarioInput) {
+                updateScenario(input: $input) {
+                    success
+                    message
+                    scenario {
+                        id
+                        shortId
+                        title
+                        description
+                        state(viewPublished: false) {
+                            prompt
+                            plotEssentials
+                            authorsNote
+                            instructions
+                        }
+                    }
+                }
+            }
+        `;
+        const data = await this.request("UpdateScenario", query, { input });
+        return data.updateScenario;
+    }
+
+    /**
      * Update the scripts of a Scenario
      * @param {string} shortId - Scenario shortId
      * @param {Object} scripts - { sharedLibrary, onInput, onModelContext, onOutput }

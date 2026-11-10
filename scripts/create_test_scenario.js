@@ -58,16 +58,31 @@ async function main() {
     const inputCode = readSandboxFile("input.js", `const modifier = (text) => {\n    if (typeof GetoptSandbox === "function") {\n        text = GetoptSandbox("input", text);\n    }\n    return { text };\n};\nmodifier(text);`);
     const contextCode = readSandboxFile("context.js", `const modifier = (text) => {\n    if (typeof GetoptSandbox === "function") {\n        [text, stop] = GetoptSandbox("context", text, stop);\n    }\n    return { text, stop };\n};\nmodifier(text);`);
     const outputCode = readSandboxFile("output.js", `const modifier = (text) => {\n    if (typeof GetoptSandbox === "function") {\n        text = GetoptSandbox("output", text);\n    }\n    return { text };\n};\nmodifier(text);`);
-    const openingPrompt = readSandboxFile("Opening-Story.txt", "You stand inside the automated testing pavilion. The hearth burns warmly in the center of the chamber as diagnostic glyphs pulse along the walls.\n\nType /test to initiate the in-game self-test suite.");
-    const instructions = readSandboxFile("AI-Instruction.txt", "This adventure uses GetoptAID to handle player slash commands (such as /roll, /inv, and /stat).");
+    const rawPrompt = readSandboxFile("Opening-Story.txt", "The cold mountain wind howls across the jagged pass of the Ironridge Range, carrying the sharp scent of cedar and impending snow.\n\nInside, the Crossroads Waystation tavern hums with low murmurs and a roaring hearth.\n\nWhat do you do next?");
+    
+    // Sanitize prompt: Strip tutorial blocks and slash command mentions to prevent LLM mimicry
+    const sanitizedPrompt = rawPrompt
+        .replace(/---\s*\[.*?Active[\s\S]*?---\s*/gi, "")
+        .replace(/^\s*\*?\s*\/[a-zA-Z0-9_-]+.*$/gm, "")
+        .trim();
+
+    // Clean AI Instructions without command syntax examples that could confuse the LLM
+    const cleanInstructions = [
+        "You are the Game Master for an immersive interactive fiction adventure set in the frontier world of The Crossroads.",
+        "- Write in rich, second-person perspective (\"You\").",
+        "- Maintain an atmospheric, engaging, and dynamic storytelling tone.",
+        "- React directly to player actions, events, and bracketed notifications in the narrative.",
+        "- If bracketed system notifications appear (such as dice rolls or inventory updates), narrate the consequences naturally without repeating technical notation.",
+        "- Focus strictly on storytelling and world progression."
+    ].join("\n");
 
     const scenarioPayload = {
         title: "[DEV] AID Integration Testbed (Antigravity)",
         description: "Dedicated automated testing scenario managed by Antigravity (AID-LLM-connector). Used for regression testing of AID-Getopt, Entity-Cards, and Inner-Entity.",
-        prompt: openingPrompt,
-        memory: "Active testing ground for AID-Getopt and Entity-Cards.",
-        authorsNote: "[ Test Harness Active ]",
-        instructions: instructions,
+        prompt: sanitizedPrompt,
+        memory: "The Crossroads Waystation is a warm mountain haven along the treacherous pass of the Ironridge Range.",
+        authorsNote: "",
+        instructions: cleanInstructions,
         scriptsEnabled: true,
         gameCode: {
             sharedLibrary: libraryCode,
