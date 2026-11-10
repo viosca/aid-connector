@@ -249,6 +249,22 @@ class AIDClient {
             }
         }
 
+        // Always persist scriptsEnabled and isScript flags via updateScenario
+        if (created.success && created.scenario) {
+            const updates = { shortId: created.scenario.shortId };
+            if (input.scriptsEnabled !== false) {
+                updates.scriptsEnabled = true;
+            }
+            if (input.isScript) {
+                updates.isScript = true;
+            }
+            try {
+                await this.updateScenario(updates);
+            } catch (err) {
+                console.warn(`[AIDClient] Warning: Failed to persist scenario flags: ${err.message}`);
+            }
+        }
+
         return created;
     }
 
@@ -382,10 +398,20 @@ class AIDClient {
         const data = await this.request("SimpleStartAddAdventure", query, variables);
         const playAdv = data.playAdventure;
 
-        // Auto-enable scenario scripts on newly spawned adventure
-        if (playAdv.success && playAdv.adventure?.shortId && scenarioShortId) {
+        // Auto-enable all attached scripts on newly spawned adventure
+        if (playAdv.success && playAdv.adventure?.shortId) {
             try {
-                await this.setAdventureScriptEnabled(playAdv.adventure.shortId, scenarioShortId, true);
+                const advScripts = await this.getAdventureScripts(playAdv.adventure.shortId);
+                for (const s of advScripts) {
+                    try {
+                        await this.setAdventureScriptEnabled(playAdv.adventure.shortId, s.shortId, true);
+                    } catch (_) {}
+                }
+                if (scenarioShortId) {
+                    try {
+                        await this.setAdventureScriptEnabled(playAdv.adventure.shortId, scenarioShortId, true);
+                    } catch (_) {}
+                }
             } catch (err) {
                 // Ignore if scenario has no active script module
             }
@@ -424,6 +450,106 @@ class AIDClient {
             enabled
         });
         return data.setAdventureScriptEnabled;
+    }
+
+    /**
+     * Attach an external script to a scenario
+     * @param {string} scenarioShortId 
+     * @param {string} scriptShortId 
+     * @returns {Promise<any>}
+     */
+    async attachScenarioScript(scenarioShortId, scriptShortId) {
+        const query = `
+            mutation AttachScenarioScript(
+                $scenarioShortId: String!
+                $scriptShortId: String!
+            ) {
+                attachScenarioScript(
+                    scenarioShortId: $scenarioShortId
+                    scriptShortId: $scriptShortId
+                ) {
+                    code
+                    success
+                    message
+                }
+            }
+        `;
+        const data = await this.request("AttachScenarioScript", query, {
+            scenarioShortId,
+            scriptShortId
+        });
+        return data.attachScenarioScript;
+    }
+
+    /**
+     * Detach an external script from a scenario
+     * @param {string} scenarioShortId 
+     * @param {string} scriptShortId 
+     * @returns {Promise<any>}
+     */
+    async detachScenarioScript(scenarioShortId, scriptShortId) {
+        const query = `
+            mutation DetachScenarioScript(
+                $scenarioShortId: String!
+                $scriptShortId: String!
+            ) {
+                detachScenarioScript(
+                    scenarioShortId: $scenarioShortId
+                    scriptShortId: $scriptShortId
+                ) {
+                    code
+                    success
+                    message
+                }
+            }
+        `;
+        const data = await this.request("DetachScenarioScript", query, {
+            scenarioShortId,
+            scriptShortId
+        });
+        return data.detachScenarioScript;
+    }
+
+    /**
+     * Get attached scripts for a scenario
+     * @param {string} scenarioShortId 
+     * @returns {Promise<Array<any>>}
+     */
+    async getScenarioScripts(scenarioShortId) {
+        const query = `
+            query GetScenarioScripts($scenarioShortId: String!) {
+                scenarioScripts(scenarioShortId: $scenarioShortId) {
+                    id
+                    shortId
+                    title
+                    enabled
+                    builtIn
+                }
+            }
+        `;
+        const data = await this.request("GetScenarioScripts", query, { scenarioShortId });
+        return data.scenarioScripts || [];
+    }
+
+    /**
+     * Get attached scripts for an adventure
+     * @param {string} adventureShortId 
+     * @returns {Promise<Array<any>>}
+     */
+    async getAdventureScripts(adventureShortId) {
+        const query = `
+            query GetAdventureScripts($adventureShortId: String!) {
+                adventureScripts(adventureShortId: $adventureShortId) {
+                    id
+                    shortId
+                    title
+                    enabled
+                    builtIn
+                }
+            }
+        `;
+        const data = await this.request("GetAdventureScripts", query, { adventureShortId });
+        return data.adventureScripts || [];
     }
 
     /**

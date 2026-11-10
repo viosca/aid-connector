@@ -12,7 +12,8 @@
     "create-multimod": "node scripts/create_multimod_scenario.js",
     "create-autocards": "node scripts/create_autocards_testbed.js",
     "test:aid": "node scripts/run_aid_test.js",
-    "test:autocards": "node test/test_autocards_regression.js"
+    "test:autocards": "node test/test_autocards_regression.js",
+    "test:waterfall": "node test/test_waterfall_regression.js"
   },
   "keywords": [
     "ai-dungeon",
