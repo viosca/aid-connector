@@ -376,7 +376,50 @@ class AIDClient {
             viewPublished
         };
         const data = await this.request("SimpleStartAddAdventure", query, variables);
-        return data.playAdventure;
+        const playAdv = data.playAdventure;
+
+        // Auto-enable scenario scripts on newly spawned adventure
+        if (playAdv.success && playAdv.adventure?.shortId && scenarioShortId) {
+            try {
+                await this.setAdventureScriptEnabled(playAdv.adventure.shortId, scenarioShortId, true);
+            } catch (err) {
+                // Ignore if scenario has no active script module
+            }
+        }
+
+        return playAdv;
+    }
+
+    /**
+     * Enable or disable an attached script on an adventure
+     * @param {string} adventureShortId 
+     * @param {string} scriptShortId 
+     * @param {boolean} [enabled=true]
+     * @returns {Promise<any>}
+     */
+    async setAdventureScriptEnabled(adventureShortId, scriptShortId, enabled = true) {
+        const query = `
+            mutation SetAdventureScriptEnabled(
+                $adventureShortId: String!
+                $scriptShortId: String!
+                $enabled: Boolean!
+            ) {
+                setAdventureScriptEnabled(
+                    adventureShortId: $adventureShortId
+                    scriptShortId: $scriptShortId
+                    enabled: $enabled
+                ) {
+                    success
+                    message
+                }
+            }
+        `;
+        const data = await this.request("SetAdventureScriptEnabled", query, {
+            adventureShortId,
+            scriptShortId,
+            enabled
+        });
+        return data.setAdventureScriptEnabled;
     }
 
     /**
