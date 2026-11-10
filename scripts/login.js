@@ -19,39 +19,37 @@ const { AIDClient, auth } = require("../src");
 
 function askQuestion(query, hidden = false) {
     return new Promise(resolve => {
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-
-        if (hidden) {
-            // Mute output for password typing
-            process.stdout.write(query);
-            const stdin = process.openStdin();
-            let pass = "";
-            const onData = (char) => {
-                char = char + "";
-                switch (char) {
-                    case "\n":
-                    case "\r":
-                    case "\u0004":
-                        stdin.removeListener("data", onData);
-                        break;
-                    default:
-                        pass += char;
-                        break;
-                }
-            };
-            stdin.on("data", onData);
-            rl.question("", () => {
-                console.log();
-                resolve(pass.trim());
+        if (!hidden) {
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: process.stdout
             });
-        } else {
             rl.question(query, answer => {
                 rl.close();
                 resolve(answer.trim());
             });
+        } else {
+            const Writable = require("stream").Writable;
+            const mutableStdout = new Writable({
+                write: function (chunk, encoding, callback) {
+                    if (!this.muted) {
+                        process.stdout.write(chunk, encoding);
+                    }
+                    callback();
+                }
+            });
+            mutableStdout.muted = false;
+            const rl = readline.createInterface({
+                input: process.stdin,
+                output: mutableStdout,
+                terminal: true
+            });
+            rl.question(query, answer => {
+                console.log();
+                rl.close();
+                resolve(answer.trim());
+            });
+            mutableStdout.muted = true;
         }
     });
 }

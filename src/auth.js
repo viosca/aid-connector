@@ -26,7 +26,11 @@ async function signInWithEmailPassword(email, password) {
     const url = `${config.firebase.signInUrl}?key=${config.firebase.apiKey}`;
     const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "Referer": "https://play.aidungeon.com/",
+            "Origin": "https://play.aidungeon.com"
+        },
         body: JSON.stringify({
             email,
             password,
