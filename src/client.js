@@ -160,7 +160,7 @@ class AIDClient {
                     }
                     state(viewPublished: $viewPublished) {
                         prompt
-                        memory
+                        plotEssentials
                         authorsNote
                         scripts {
                             onInput
@@ -174,6 +174,73 @@ class AIDClient {
         `;
         const data = await this.request("GetScenarioDetails", query, { shortId, viewPublished });
         return data.scenario;
+    }
+
+    /**
+     * Create a new Scenario
+     * @param {Object} input - ScenarioInput
+     * @param {string} input.title - Scenario title
+     * @param {string} [input.description] - Scenario description
+     * @param {string} [input.prompt] - Starting story prompt
+     * @param {string} [input.memory] - Plot essentials / memory
+     * @param {string} [input.authorsNote] - Author's note
+     * @param {Object} [input.gameCode] - { sharedLibrary, onInput, onModelContext, onOutput }
+     * @param {boolean} [input.scriptsEnabled=true]
+     * @returns {Promise<any>} Created scenario object
+     */
+    async createScenario(input) {
+        const query = `
+            mutation NewMenuCreateScenario($input: ScenarioInput) {
+                createScenario(input: $input) {
+                    success
+                    message
+                    scenario {
+                        id
+                        shortId
+                        title
+                        description
+                        published
+                        isPublishedSnapshot
+                        state(viewPublished: false) {
+                            prompt
+                            plotEssentials
+                            authorsNote
+                            scripts {
+                                onInput
+                                onOutput
+                                onModelContext
+                                sharedLibrary
+                            }
+                        }
+                    }
+                }
+            }
+        `;
+        const scenarioInput = {
+            title: input.title,
+            description: input.description || "",
+            prompt: input.prompt || "",
+            memory: input.memory || "",
+            authorsNote: input.authorsNote || "",
+            scriptsEnabled: input.scriptsEnabled !== undefined ? input.scriptsEnabled : true,
+            ...input
+        };
+        const data = await this.request("NewMenuCreateScenario", query, { input: scenarioInput });
+        const created = data.createScenario;
+
+        // If custom gameCode was provided and scenario was created, update scripts
+        if (created.success && created.scenario && input.gameCode) {
+            try {
+                const scriptRes = await this.updateScenarioScripts(created.scenario.shortId, input.gameCode);
+                if (scriptRes.scenario?.state?.scripts) {
+                    created.scenario.state.scripts = scriptRes.scenario.state.scripts;
+                }
+            } catch (err) {
+                console.warn(`[AIDClient] Warning: Failed to upload initial gameCode scripts: ${err.message}`);
+            }
+        }
+
+        return created;
     }
 
     /**
