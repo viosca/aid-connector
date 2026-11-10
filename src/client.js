@@ -129,6 +129,11 @@ class AIDClient {
                     memory
                     authorsNote
                     thirdPerson
+                    actionWindow {
+                        id
+                        type
+                        text
+                    }
                 }
             }
         `;
@@ -314,21 +319,43 @@ class AIDClient {
      * Start a new adventure from a scenario
      * @param {string} scenarioShortId 
      * @param {Object} [options]
+     * @param {boolean} [options.viewPublished=false]
      * @returns {Promise<any>} Created adventure object
      */
     async playAdventure(scenarioShortId, options = {}) {
+        let prompt = options.prompt;
+        let memory = options.memory;
+        let authorsNote = options.authorsNote;
+        const viewPublished = options.viewPublished !== undefined ? options.viewPublished : false;
+
+        // If prompt/memory omitted, populate from scenario state
+        if (prompt === undefined || memory === undefined) {
+            try {
+                const scn = await this.getScenario(scenarioShortId, viewPublished);
+                if (scn?.state) {
+                    if (prompt === undefined) prompt = scn.state.prompt || "";
+                    if (memory === undefined) memory = scn.state.plotEssentials || "";
+                    if (authorsNote === undefined) authorsNote = scn.state.authorsNote || "";
+                }
+            } catch (e) {
+                // Ignore fallback error
+            }
+        }
+
         const query = `
             mutation SimpleStartAddAdventure(
                 $scenarioShortId: String
                 $prompt: String
                 $memory: String
                 $authorsNote: String
+                $viewPublished: Boolean
             ) {
                 playAdventure(
                     scenarioShortId: $scenarioShortId
                     prompt: $prompt
                     memory: $memory
                     authorsNote: $authorsNote
+                    viewPublished: $viewPublished
                 ) {
                     success
                     message
@@ -343,9 +370,10 @@ class AIDClient {
         `;
         const variables = {
             scenarioShortId,
-            prompt: options.prompt,
-            memory: options.memory,
-            authorsNote: options.authorsNote
+            prompt,
+            memory,
+            authorsNote,
+            viewPublished
         };
         const data = await this.request("SimpleStartAddAdventure", query, variables);
         return data.playAdventure;
