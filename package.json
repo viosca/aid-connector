@@ -9,6 +9,7 @@
     "login": "node scripts/login.js",
     "bridge": "node scripts/bridge.js",
     "create-scenario": "node scripts/create_test_scenario.js",
+    "create-multimod": "node scripts/create_multimod_scenario.js",
     "test:aid": "node scripts/run_aid_test.js"
   },
   "keywords": [
