@@ -111,7 +111,7 @@ async function runTest(adventureShortId, customCommand) {
 }
 
 const targetShortId = process.argv[2] || null;
-const targetCommand = process.argv[3] || null;
+const targetCommand = process.argv.slice(3).join(" ").trim() || null;
 
 runTest(targetShortId, targetCommand).catch(err => {
     console.error("\n❌ Test execution failed:", err.message);
