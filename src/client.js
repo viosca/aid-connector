@@ -137,6 +137,46 @@ class AIDClient {
     }
 
     /**
+     * Fetch scenario data and scripts by shortId
+     * @param {string} shortId - Scenario shortId (e.g. from play.aidungeon.com/scenario/<shortId>)
+     * @param {boolean} [viewPublished=true] - Whether to view published state or draft state
+     * @returns {Promise<any>} Scenario object
+     */
+    async getScenario(shortId, viewPublished = true) {
+        const query = `
+            query GetScenarioDetails($shortId: String, $viewPublished: Boolean) {
+                scenario(shortId: $shortId) {
+                    id
+                    shortId
+                    title
+                    description
+                    published
+                    isPublishedSnapshot
+                    createdAt
+                    updatedAt
+                    user {
+                        id
+                        username
+                    }
+                    state(viewPublished: $viewPublished) {
+                        prompt
+                        memory
+                        authorsNote
+                        scripts {
+                            onInput
+                            onOutput
+                            onModelContext
+                            sharedLibrary
+                        }
+                    }
+                }
+            }
+        `;
+        const data = await this.request("GetScenarioDetails", query, { shortId, viewPublished });
+        return data.scenario;
+    }
+
+    /**
      * Update the scripts of a Scenario
      * @param {string} shortId - Scenario shortId
      * @param {Object} scripts - { sharedLibrary, onInput, onModelContext, onOutput }
