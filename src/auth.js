@@ -47,8 +47,46 @@ async function signInWithEmailPassword(email, password) {
     cachedToken = data.idToken;
     // Set expiration slightly before actual (expiresIn is in seconds)
     tokenExpiresAt = Date.now() + (parseInt(data.expiresIn, 10) - 60) * 1000;
+    config.accessToken = data.idToken;
+
+    // Persist refreshed token to .env if available
+    try {
+        const fs = require("fs");
+        const path = require("path");
+        const envPath = path.resolve(process.cwd(), ".env");
+        if (fs.existsSync(envPath)) {
+            let envContent = fs.readFileSync(envPath, "utf8");
+            if (/^AID_ACCESS_TOKEN=.*$/m.test(envContent)) {
+                envContent = envContent.replace(/^AID_ACCESS_TOKEN=.*$/m, `AID_ACCESS_TOKEN=${data.idToken}`);
+            } else {
+                envContent = `AID_ACCESS_TOKEN=${data.idToken}\n` + envContent;
+            }
+            fs.writeFileSync(envPath, envContent, "utf8");
+        }
+    } catch (_) {
+        // Non-critical file write failure
+    }
 
     return data;
+}
+
+/**
+ * Check if a JWT token has expired
+ * @param {string} token 
+ * @returns {boolean}
+ */
+function isJwtExpired(token) {
+    try {
+        const raw = token.replace(/^firebase\s+/i, "").replace(/^bearer\s+/i, "");
+        const parts = raw.split(".");
+        if (parts.length !== 3) return false;
+        const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf8"));
+        if (!payload.exp) return false;
+        // Expired if current time is within 60s of expiration
+        return Date.now() >= (payload.exp * 1000) - 60000;
+    } catch (_) {
+        return false;
+    }
 }
 
 /**
@@ -56,13 +94,17 @@ async function signInWithEmailPassword(email, password) {
  * @returns {Promise<string>} e.g. "firebase eyJhbGci..."
  */
 async function getAuthHeader() {
-    // 1. Direct access token from .env or manual config
+    // 1. Check direct access token from .env or manual config
     if (config.accessToken) {
-        let token = config.accessToken.trim();
-        if (!token.toLowerCase().startsWith("firebase ") && !token.toLowerCase().startsWith("bearer ")) {
-            token = `firebase ${token}`;
+        if (!isJwtExpired(config.accessToken)) {
+            let token = config.accessToken.trim();
+            if (!token.toLowerCase().startsWith("firebase ") && !token.toLowerCase().startsWith("bearer ")) {
+                token = `firebase ${token}`;
+            }
+            return token;
         }
-        return token;
+        // Token in .env has expired, clear it to trigger refresh
+        config.accessToken = "";
     }
 
     // 2. Cached token from previous sign-in
