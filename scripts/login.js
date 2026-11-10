@@ -15,7 +15,7 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
-const { AIDClient, auth } = require("../src");
+const { AIDClient, auth, config } = require("../src");
 
 function askQuestion(query, hidden = false) {
     return new Promise(resolve => {
@@ -85,14 +85,19 @@ async function main() {
     console.log("  🔐 AI Dungeon Headless Login");
     console.log("==================================================================");
 
-    let email = process.argv[2];
-    let password = process.argv[3];
+    let email = process.argv[2] || config.email;
+    let password = process.argv[3] || config.password;
 
     if (!email) {
         email = await askQuestion("Enter AI Dungeon Email: ");
+    } else if (!process.argv[2]) {
+        console.log(`Using email from .env:    ${email}`);
     }
+
     if (!password) {
         password = await askQuestion("Enter AI Dungeon Password: ", true);
+    } else if (!process.argv[3]) {
+        console.log("Using password from .env: (configured)");
     }
 
     if (!email || !password) {
