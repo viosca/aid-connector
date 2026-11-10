@@ -6,7 +6,7 @@
  */
 
 const config = require("./config");
-const { getAuthHeader } = require("./auth");
+const { getAuthHeader, signInWithEmailPassword } = require("./auth");
 
 class AIDClient {
     /**
@@ -27,7 +27,7 @@ class AIDClient {
      * @param {Object} [variables] - Variables payload
      * @returns {Promise<any>} Data payload from GraphQL response
      */
-    async request(operationName, query, variables = {}) {
+    async request(operationName, query, variables = {}, isRetry = false) {
         if (!operationName) {
             throw new Error("AIDClient.request requires an operationName.");
         }
@@ -63,6 +63,20 @@ class AIDClient {
         const result = await response.json();
 
         if (result.errors && result.errors.length > 0) {
+            const isAuthError = result.errors.some(e => 
+                e.extensions?.code === "UNAUTHENTICATED" || 
+                (e.message && e.message.includes("Not authorized"))
+            );
+
+            if (isAuthError && !isRetry && config.email && config.password) {
+                try {
+                    await signInWithEmailPassword(config.email, config.password);
+                    return await this.request(operationName, query, variables, true);
+                } catch (_) {
+                    // Fall through to throw original error
+                }
+            }
+
             const errorMessages = result.errors.map(e => {
                 const code = e.extensions?.code || "GRAPHQL_ERROR";
                 return `[${code}] ${e.message}`;
