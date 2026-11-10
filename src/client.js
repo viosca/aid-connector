@@ -336,6 +336,72 @@ class AIDClient {
     }
 
     /**
+     * Update an individual story card in an adventure
+     * @param {string} shortId - Adventure shortId
+     * @param {Object} card - Existing card object
+     * @param {Object} updates - Fields to override ({ value, title, keys, type, description, etc. })
+     * @returns {Promise<any>}
+     */
+    async updateStoryCard(shortId, card, updates = {}) {
+        const input = {
+            shortId,
+            contentType: "adventure",
+            id: String(card.id),
+            title: updates.title !== undefined ? updates.title : card.title,
+            type: updates.type !== undefined ? updates.type : (card.type || "auto-card"),
+            keys: updates.keys !== undefined ? updates.keys : (card.keys || ""),
+            description: updates.description !== undefined ? updates.description : (card.description || ""),
+            value: updates.value !== undefined ? updates.value : card.value,
+            useForCharacterCreation: updates.useForCharacterCreation !== undefined ? updates.useForCharacterCreation : Boolean(card.useForCharacterCreation),
+            isPinned: updates.isPinned !== undefined ? updates.isPinned : Boolean(card.isPinned)
+        };
+        const query = `
+            mutation UpdateStoryCard($input: UpdateStoryCardInput!) {
+                updateStoryCard(input: $input) {
+                    success
+                    message
+                    storyCard {
+                        id
+                        title
+                        type
+                        keys
+                        value
+                    }
+                }
+            }
+        `;
+        const data = await this.request("UpdateStoryCard", query, { input });
+        return data.updateStoryCard;
+    }
+
+    /**
+     * Fetch all story cards for an adventure
+     * @param {string} shortId - Adventure shortId
+     * @returns {Promise<Array<any>>}
+     */
+    async getStoryCards(shortId) {
+        const query = `
+            query GetStoryCards($shortId: String) {
+                adventure(shortId: $shortId) {
+                    storyCardCount
+                    storyCards {
+                        id
+                        title
+                        type
+                        keys
+                        value
+                        description
+                        isPinned
+                        useForCharacterCreation
+                    }
+                }
+            }
+        `;
+        const data = await this.request("GetStoryCards", query, { shortId });
+        return data.adventure?.storyCards || [];
+    }
+
+    /**
      * Start a new adventure from a scenario
      * @param {string} scenarioShortId 
      * @param {Object} [options]
