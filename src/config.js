@@ -43,7 +43,9 @@ const config = {
 
     // Firebase Auth configuration for AI Dungeon
     firebase: {
-        apiKey: "AIzaSyCnvo_XFPmAabrDkOKBRpbivp5UH8r_3mg",
+        // Public Firebase client API key for project aidungeon-2c6cc (shipped in play.aidungeon.com web client).
+        // Note: This is a public client identifier, not a private server secret. Can be overridden via AID_FIREBASE_API_KEY.
+        apiKey: process.env.AID_FIREBASE_API_KEY || "AIzaSyCnvo_XFPmAabrDkOKBRpbivp5UH8r_3mg",
         authDomain: "auth.aidungeon.com",
         projectId: "aidungeon-2c6cc",
         signInUrl: "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword",
