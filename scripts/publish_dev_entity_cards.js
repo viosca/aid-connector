@@ -11,10 +11,10 @@ async function main() {
     const shortId = "_X5-3ouDjE10";
     console.log(`=== Deploying Latest Auto-Cards/Entity-Cards to Test Script (${shortId}) ===`);
 
-    const sharedLibrary = fs.readFileSync("C:/git/Auto-Cards/src/library.js", "utf8");
-    const onInput = fs.readFileSync("C:/git/Auto-Cards/src/input.js", "utf8");
-    const onModelContext = fs.readFileSync("C:/git/Auto-Cards/src/context.js", "utf8");
-    const onOutput = fs.readFileSync("C:/git/Auto-Cards/src/output.js", "utf8");
+    const sharedLibrary = fs.readFileSync("C:/git/Entity-Cards/src/library.js", "utf8");
+    const onInput = fs.readFileSync("C:/git/Entity-Cards/src/input.js", "utf8");
+    const onModelContext = fs.readFileSync("C:/git/Entity-Cards/src/context.js", "utf8");
+    const onOutput = fs.readFileSync("C:/git/Entity-Cards/src/output.js", "utf8");
 
     console.log(`Loaded library.js: ${sharedLibrary.length} bytes`);
 

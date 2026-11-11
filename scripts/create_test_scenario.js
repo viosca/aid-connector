@@ -42,7 +42,7 @@ async function main() {
     console.log(`Authenticated as: ${user.username || user.email} (ID: ${user.id})`);
 
     // 2. Read local sandbox scripts and prompt
-    const sandboxDir = path.resolve("C:/git/aid-getopt/AID-sandbox");
+    const sandboxDir = path.resolve("C:/git/aid-getopt/examples");
     
     function readSandboxFile(fileName, fallback) {
         const fullPath = path.join(sandboxDir, fileName);

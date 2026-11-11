@@ -5,8 +5,8 @@
  * 
  * Bundles:
  *   1. AID-Modules   (C:/git/aid-modules/library-aid-modules.js)
- *   2. AID-Getopt    (C:/git/aid-getopt/AID-sandbox/library-sandbox.js - stripped of demo commands)
- *   3. Auto-Cards    (C:/git/Auto-Cards/src/library.js - v2.8.0-EC)
+ *   2. AID-Getopt    (C:/git/aid-getopt/examples/library-sandbox.js - stripped of demo commands)
+ *   3. Auto-Cards    (C:/git/Entity-Cards/src/library.js - v2.8.0-EC)
  * 
  * Configures the sequential cooperative modifier pipeline, sets up clean
  * narrative prompts/instructions, deploys to AI Dungeon, and creates a test adventure.
@@ -52,7 +52,7 @@ async function main() {
     console.log(`✔ Read AID-Modules (${modLibCode.length} bytes)`);
 
     // 3. Read AID-Getopt library and strip demo commands (/roll, /inv, /stat)
-    const getoptLibPath = path.resolve("C:/git/aid-getopt/AID-sandbox/library-sandbox.js");
+    const getoptLibPath = path.resolve("C:/git/aid-getopt/examples/library-sandbox.js");
     let getoptLibCode = fs.readFileSync(getoptLibPath, "utf8");
 
     const splitStart = getoptLibCode.indexOf("// Command 1: /roll");
@@ -65,7 +65,7 @@ async function main() {
     }
 
     // 4. Read Auto-Cards library
-    const ecLibPath = path.resolve("C:/git/Auto-Cards/src/library.js");
+    const ecLibPath = path.resolve("C:/git/Entity-Cards/src/library.js");
     const ecLibCode = fs.readFileSync(ecLibPath, "utf8");
     console.log(`✔ Read Auto-Cards engine (${ecLibCode.length} bytes)`);
 
@@ -137,7 +137,7 @@ const modifier = (text) => {
 modifier(text);`;
 
     // 7. Sanitized opening story & clean GM instructions (zero slash commands)
-    const promptPath = path.resolve("C:/git/aid-getopt/AID-sandbox/Opening-Story.txt");
+    const promptPath = path.resolve("C:/git/aid-getopt/examples/Opening-Story.txt");
     const rawPrompt = fs.readFileSync(promptPath, "utf8");
     const sanitizedPrompt = rawPrompt
         .replace(/---\s*\[.*?Active[\s\S]*?---\s*/gi, "")

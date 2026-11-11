@@ -5,7 +5,7 @@
  * 
  * Bundles:
  *   1. AID-Modules (C:/git/aid-modules/library-aid-modules.js)
- *   2. AID-Getopt  (C:/git/aid-getopt/AID-sandbox/library-sandbox.js)
+ *   2. AID-Getopt  (C:/git/aid-getopt/examples/library-sandbox.js)
  * 
  * Deploys the multi-module testbed scenario, launches an adventure,
  * and executes `/mods` and `/test`.
@@ -54,17 +54,17 @@ async function main() {
     console.log(`✔ Read AID-Modules library (${modLibCode.length} bytes)`);
 
     // 3. Read AID-Getopt sandbox library & modifiers
-    const getoptLibPath = path.resolve("C:/git/aid-getopt/AID-sandbox/library-sandbox.js");
+    const getoptLibPath = path.resolve("C:/git/aid-getopt/examples/library-sandbox.js");
     if (!fs.existsSync(getoptLibPath)) {
         throw new Error(`AID-Getopt library not found at ${getoptLibPath}`);
     }
     const getoptLibCode = fs.readFileSync(getoptLibPath, "utf8");
     console.log(`✔ Read AID-Getopt library (${getoptLibCode.length} bytes)`);
 
-    const inputPath = path.resolve("C:/git/aid-getopt/AID-sandbox/input.js");
-    const contextPath = path.resolve("C:/git/aid-getopt/AID-sandbox/context.js");
-    const outputPath = path.resolve("C:/git/aid-getopt/AID-sandbox/output.js");
-    const promptPath = path.resolve("C:/git/aid-getopt/AID-sandbox/Opening-Story.txt");
+    const inputPath = path.resolve("C:/git/aid-getopt/examples/input.js");
+    const contextPath = path.resolve("C:/git/aid-getopt/examples/context.js");
+    const outputPath = path.resolve("C:/git/aid-getopt/examples/output.js");
+    const promptPath = path.resolve("C:/git/aid-getopt/examples/Opening-Story.txt");
 
     const inputCode = fs.readFileSync(inputPath, "utf8");
     const contextCode = fs.readFileSync(contextPath, "utf8");

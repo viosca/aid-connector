@@ -12,7 +12,7 @@ async function main() {
     console.log(`=== Deploying Latest AID-Modules & AID-Getopt to Script (${shortId}) ===`);
 
     const modLib = fs.readFileSync("C:/git/aid-modules/library-aid-modules.js", "utf8");
-    let getoptLib = fs.readFileSync("C:/git/aid-getopt/AID-sandbox/library-sandbox.js", "utf8");
+    let getoptLib = fs.readFileSync("C:/git/aid-getopt/examples/library-sandbox.js", "utf8");
     const splitStart = getoptLib.indexOf("// Command 1: /roll");
     const splitEnd = getoptLib.indexOf("// Command 4: /help");
     if (splitStart !== -1 && splitEnd !== -1) {
