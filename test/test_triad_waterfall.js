@@ -97,14 +97,24 @@ async function main() {
         }
     }
 
-    // 3. Step 1: Upstream Router Interception & Early Halting (/diag)
+    // 3. Step 1: Upstream Router Interception & Early Halting (/aid-getopt, /aid-modules, /help)
     console.log("\n==================================================================");
-    console.log("  STEP 1: Upstream Router Interception & Early Halting (/diag)");
+    console.log("  STEP 1: Upstream Router Interception & Collision-Proof Commands");
     console.log("==================================================================");
-    const diagTurn = await sendTurn(client, adv.id, adv.shortId, "/diag");
+    const diagTurn = await sendTurn(client, adv.id, adv.shortId, "/aid-getopt --diag");
     const diagText = diagTurn.actionWindow.slice(-1)[0]?.text || "";
-    assert(diagText.includes("AID-Getopt System Diagnostics"), "Script 1 must intercept /diag and halt before downstream scripts");
-    console.log("  ✓ /diag successfully intercepted and halted by Script 1 (Router).");
+    assert(diagText.includes("AID-Getopt System Diagnostics"), "Script 1 must intercept /aid-getopt --diag and halt before downstream scripts");
+    console.log("  ✓ /aid-getopt --diag successfully intercepted and halted by Script 1 (Router).");
+
+    const modTurn = await sendTurn(client, adv.id, adv.shortId, "/aid-modules");
+    const modText = modTurn.actionWindow.slice(-1)[0]?.text || "";
+    assert(modText.includes("Active AI Dungeon Modules"), "Script 1 must intercept /aid-modules cleanly");
+    console.log("  ✓ /aid-modules successfully executed without collisions.");
+
+    const helpTurn = await sendTurn(client, adv.id, adv.shortId, "/help");
+    const helpText = helpTurn.actionWindow.slice(-1)[0]?.text || "";
+    assert(helpText.includes("ADVENTURE COMMAND DIRECTORY"), "Script 1 must render the master /help directory");
+    console.log("  ✓ /help successfully rendered dynamic Adventure Command Directory.");
 
     // 4. Step 2: Cross-Script Command Passthrough (/ec)
     console.log("\n==================================================================");
