@@ -14,7 +14,8 @@
     "test:aid": "node scripts/run_aid_test.js",
     "test:autocards": "node test/test_autocards_regression.js",
     "test:waterfall": "node test/test_waterfall_regression.js",
-    "test:autonomous": "node test/test_autocards_autonomous.js"
+    "test:autonomous": "node test/test_autocards_autonomous.js",
+    "test:triad": "node test/test_triad_waterfall.js"
   },
   "keywords": [
     "ai-dungeon",
