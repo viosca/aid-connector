@@ -26,7 +26,7 @@
 
 ## Why `aid-connector`?
 
-Building complex scenario scripts for AI Dungeon—such as POSIX command parsers ([`aid-getopt`](https://github.com/Random-Variable/aid-getopt)), autonomous lore engines ([`Entity-Cards`](https://github.com/Random-Variable/Auto-Cards)), and character minds ([`Inner-Self`](https://play.aidungeon.com/profile/Random_Variable))—requires verifying intricate multi-script waterfalls:
+Building complex scenario scripts for AI Dungeon—such as POSIX command parsers ([`aid-getopt`](https://github.com/viosca/aid-getopt)), autonomous lore engines ([`Entity-Cards`](https://github.com/viosca/Auto-Cards)), and character minds ([`Inner-Self`](https://play.aidungeon.com/profile/Random_Variable))—requires verifying intricate multi-script waterfalls:
 - Does an upstream command router intercept `/diag` and halt before downstream scripts run?
 - Does `stop = true` cleanly prevent LLM token generation?
 - Does autonomous background Named Entity Recognition (NER) inject story cards under `World Lore:` deterministically?
@@ -60,7 +60,7 @@ Testing these behaviors manually in the web UI requires dozens of repetitive cli
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/Random-Variable/aid-connector.git
+git clone https://github.com/viosca/aid-connector.git
 cd aid-connector
 npm install
 ```
@@ -184,4 +184,4 @@ runTest();
 
 ## License
 
-MIT © [Randy Viosca](https://github.com/Random-Variable)
+MIT © [Randy Viosca](https://github.com/viosca) ([@Random_Variable](https://play.aidungeon.com/profile/Random_Variable))
