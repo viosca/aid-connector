@@ -1,7 +1,7 @@
 {
-  "name": "aid-llm-connector",
+  "name": "aid-connector",
   "version": "0.1.0",
-  "description": "Automated GraphQL API connection, testing bridge, and scenario manager for AI Dungeon and Antigravity",
+  "description": "Headless scenario CI/CD, regression testing harness, and developer bridge for AI Dungeon QuickJS scripts",
   "main": "src/index.js",
   "scripts": {
     "test": "node test/test_connection.js",
@@ -18,10 +18,12 @@
   },
   "keywords": [
     "ai-dungeon",
+    "scenario-testing",
+    "regression-testing",
+    "ci-cd",
+    "developer-tools",
     "graphql",
-    "antigravity",
-    "llm",
-    "automated-testing"
+    "quickjs"
   ],
   "author": "Randy Viosca",
   "license": "MIT"

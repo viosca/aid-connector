@@ -36,7 +36,8 @@ class AIDClient {
 
         const headers = {
             "Content-Type": "application/json",
-            "x-gql-operation-name": operationName
+            "x-gql-operation-name": operationName,
+            "User-Agent": "aid-connector/0.1.0 (Scenario CI/CD & Regression Testing Harness; Developer Tooling)"
         };
 
         if (authHeader) {
