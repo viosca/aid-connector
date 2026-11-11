@@ -7,6 +7,16 @@ async function sleep(ms) {
 }
 
 async function main() {
+    if (!process.argv.includes("--force")) {
+        console.error(
+            "\n[SAFETY BLOCKED] AI dev safety policy prohibits publicly publishing scenarios to AI Dungeon without explicit confirmation.\n" +
+            "Automated development and testbeds should run unpublished draft scenarios (viewPublished: false).\n" +
+            "To intentionally publish this script to AI Dungeon, rerun with '--force':\n" +
+            "  node scripts/publish_dev_getopt.js --force\n"
+        );
+        process.exit(1);
+    }
+
     const client = new AIDClient();
     const shortId = "3MdjmiOipsOx";
     console.log(`=== Deploying Latest AID-Modules & AID-Getopt to Script (${shortId}) ===`);
@@ -105,17 +115,12 @@ modifier(text);`;
 
     // 4. Publish scenario
     console.log("5. Publishing scenario (SILENT tier)...");
-    const pubRes = await client.request("Pub", `mutation Pub($shortId: String!, $pub: ScenarioPublicationInput!) {
-        publishScenario(shortId: $shortId, publication: $pub) { success message }
-    }`, {
-        shortId,
-        pub: {
-            updateTier: "SILENT",
-            title: "[DEV] AID-Getopt Router (v1.0.0)",
-            body: "Internal test router snapshot"
-        }
-    });
-    console.log("Publish result:", pubRes.publishScenario);
+    const pubRes = await client.publishScenario(shortId, {
+        updateTier: "SILENT",
+        title: "[DEV] AID-Getopt Router (v1.0.0)",
+        body: "Internal test router snapshot"
+    }, { force: true });
+    console.log("Publish result:", pubRes);
 
     // 5. Verify published script
     const sres = await client.request("GetS", `query GetS($id: String!) {

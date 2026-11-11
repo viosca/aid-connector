@@ -7,6 +7,16 @@ async function sleep(ms) {
 }
 
 async function main() {
+    if (!process.argv.includes("--force")) {
+        console.error(
+            "\n[SAFETY BLOCKED] AI dev safety policy prohibits publicly publishing scenarios to AI Dungeon without explicit confirmation.\n" +
+            "Automated development and testbeds should run unpublished draft scenarios (viewPublished: false).\n" +
+            "To intentionally publish this script to AI Dungeon, rerun with '--force':\n" +
+            "  node scripts/publish_dev_entity_cards.js --force\n"
+        );
+        process.exit(1);
+    }
+
     const client = new AIDClient();
     const shortId = "_X5-3ouDjE10";
     console.log(`=== Deploying Latest Auto-Cards/Entity-Cards to Test Script (${shortId}) ===`);
@@ -84,21 +94,12 @@ async function main() {
 
     // 4. Publish scenario
     console.log("5. Publishing scenario (SILENT tier)...");
-    const pubQ = `mutation Pub($shortId: String!, $pub: ScenarioPublicationInput!) {
-        publishScenario(shortId: $shortId, publication: $pub) {
-            success
-            message
-        }
-    }`;
-    const pubRes = await client.request("Pub", pubQ, {
-        shortId,
-        pub: {
-            updateTier: "SILENT",
-            title: "[DEV] Entity-Cards (v2.8.0-EC)",
-            body: "Internal waterfall test snapshot for Entity-Cards v2.8.0-EC"
-        }
-    });
-    console.log("Publish result:", pubRes.publishScenario);
+    const pubRes = await client.publishScenario(shortId, {
+        updateTier: "SILENT",
+        title: "[DEV] Entity-Cards (v2.8.0-EC)",
+        body: "Internal waterfall test snapshot for Entity-Cards v2.8.0-EC"
+    }, { force: true });
+    console.log("Publish result:", pubRes);
 
     // 5. Verify published script snapshot
     const sq = `query GetS($id: String!) {

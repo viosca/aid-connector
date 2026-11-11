@@ -7,6 +7,16 @@ async function sleep(ms) {
 }
 
 async function main() {
+    if (!process.argv.includes("--force")) {
+        console.error(
+            "\n[SAFETY BLOCKED] AI dev safety policy prohibits publicly publishing scenarios to AI Dungeon without explicit confirmation.\n" +
+            "Automated development and testbeds should run unpublished draft scenarios (viewPublished: false).\n" +
+            "To intentionally publish this script to AI Dungeon, rerun with '--force':\n" +
+            "  node scripts/publish_dev_inner_entity.js --force\n"
+        );
+        process.exit(1);
+    }
+
     const client = new AIDClient();
     const shortId = "XXU_L_ethgZg";
     console.log(`=== Deploying Latest Inner-Entity (Minds-Only) to Test Script (${shortId}) ===`);
@@ -84,21 +94,12 @@ async function main() {
 
     // 4. Publish scenario
     console.log("5. Publishing scenario (SILENT tier)...");
-    const pubQ = `mutation Pub($shortId: String!, $pub: ScenarioPublicationInput!) {
-        publishScenario(shortId: $shortId, publication: $pub) {
-            success
-            message
-        }
-    }`;
-    const pubRes = await client.request("Pub", pubQ, {
-        shortId,
-        pub: {
-            updateTier: "SILENT",
-            title: "Inner Entity V3.0 (plain)",
-            body: "Internal test snapshot with first-class /ie command router and AMS v1.1.0 standard"
-        }
-    });
-    console.log("Publish result:", pubRes.publishScenario);
+    const pubRes = await client.publishScenario(shortId, {
+        updateTier: "SILENT",
+        title: "Inner Entity V3.0 (plain)",
+        body: "Internal test snapshot with first-class /ie command router and AMS v1.1.0 standard"
+    }, { force: true });
+    console.log("Publish result:", pubRes);
 
     // 5. Verify published script snapshot
     const sq = `query GetS($id: String!) {

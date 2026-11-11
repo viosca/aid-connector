@@ -32,6 +32,24 @@ class AIDClient {
             throw new Error("AIDClient.request requires an operationName.");
         }
 
+        // Safety guard: Block accidental publishScenario operations unless explicitly forced
+        if (typeof query === "string" && query.includes("publishScenario")) {
+            const hasForce = Boolean(
+                variables?.force ||
+                process.env.AID_FORCE_PUBLISH === "true" ||
+                process.env.AID_FORCE_PUBLISH === "1" ||
+                process.argv.includes("--force")
+            );
+            if (!hasForce) {
+                throw new Error(
+                    `[AIDClient] SAFETY GUARD: Execution of 'publishScenario' was blocked. ` +
+                    `Automated development and testing must use unpublished drafts (viewPublished: false) ` +
+                    `to avoid consuming Latitude AI moderation quotas and altering public catalog listings. ` +
+                    `To publish intentionally, pass { force: true } or include the '--force' CLI flag.`
+                );
+            }
+        }
+
         const authHeader = this.token ? `firebase ${this.token.replace(/^firebase\s+/i, "")}` : await getAuthHeader();
 
         const headers = {
@@ -334,6 +352,40 @@ class AIDClient {
         };
         const data = await this.request("UpdateScenarioScripts", query, { shortId, gameCode });
         return data.updateScenarioScripts;
+    }
+
+    /**
+     * Publish a scenario to AI Dungeon.
+     * 
+     * SAFETY GUARD:
+     * By default, publishing scenarios is blocked to prevent accidental public catalog pollution,
+     * rate-limit exhaustion, and unnecessary AI moderation checks on Latitude's servers.
+     * During normal development and testing, scenarios and scripts should be executed in draft
+     * mode (`viewPublished: false`).
+     * 
+     * To explicitly publish, pass `{ force: true }` in options, set `AID_FORCE_PUBLISH=1`,
+     * or run with `--force` CLI flag.
+     * 
+     * @param {string} shortId - Scenario shortId
+     * @param {Object} publication - ScenarioPublicationInput { updateTier, title, body, etc. }
+     * @param {Object} [options] - { force: boolean }
+     * @returns {Promise<any>}
+     */
+    async publishScenario(shortId, publication = {}, options = {}) {
+        const query = `
+            mutation PublishScenario($shortId: String!, $pub: ScenarioPublicationInput!) {
+                publishScenario(shortId: $shortId, publication: $pub) {
+                    success
+                    message
+                }
+            }
+        `;
+        const data = await this.request("PublishScenario", query, {
+            shortId,
+            pub: publication,
+            force: options.force
+        });
+        return data.publishScenario;
     }
 
     /**
