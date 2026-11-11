@@ -91,22 +91,16 @@ npm run verify
 
 ---
 
-## Running Test Suites
+## Testing the SDK
 
-Run the local connectivity and client unit tests:
+Run the client unit and connectivity tests:
 ```bash
 npm test
 ```
 
-Run the **Live Multi-Script Waterfall Regression Suite** (verifies Case 1 built-in routers and Case 3 dual attached scripts):
-```bash
-npm run test:waterfall
-```
-
-Run the **Autonomous NER & Context Injection Suite** (verifies passive entity extraction and model prompt injection):
-```bash
-npm run test:autonomous
-```
+> [!TIP]
+> **Looking for Multi-Script Playtesting & Waterfall Testbeds?**  
+> Check out [`aid-testbeds-live`](https://github.com/viosca/aid-testbeds-live) for the full automated end-to-end playtesting suite, including the Triad waterfall (`AID-Getopt` $\rightarrow$ `Entity-Cards` $\rightarrow$ `Inner Entity`), autonomous NER discovery, and context injection tests!
 
 ---
 
@@ -129,10 +123,7 @@ aid-connector/
 │   ├── create_test_scenario.js   # Sample testbed scenario generator
 │   └── publish_dev_*.js          # Automated developer script publisher
 ├── test/
-│   ├── test_connection.js        # Core client unit tests
-│   ├── test_waterfall_regression.js # Full multi-script waterfall test suite
-│   ├── test_autocards_regression.js # Slash-command card generation suite
-│   └── test_autocards_autonomous.js # Passive NER & context injection suite
+│   └── test_connection.js        # Core client unit & connectivity tests
 ├── .env.example                  # Environment template
 ├── package.json
 └── README.md

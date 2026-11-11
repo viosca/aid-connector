@@ -7,15 +7,7 @@
     "test": "node test/test_connection.js",
     "verify": "node scripts/verify_auth.js",
     "login": "node scripts/login.js",
-    "bridge": "node scripts/bridge.js",
-    "create-scenario": "node scripts/create_test_scenario.js",
-    "create-multimod": "node scripts/create_multimod_scenario.js",
-    "create-autocards": "node scripts/create_autocards_testbed.js",
-    "test:aid": "node scripts/run_aid_test.js",
-    "test:autocards": "node test/test_autocards_regression.js",
-    "test:waterfall": "node test/test_waterfall_regression.js",
-    "test:autonomous": "node test/test_autocards_autonomous.js",
-    "test:triad": "node test/test_triad_waterfall.js"
+    "bridge": "node scripts/bridge.js"
   },
   "keywords": [
     "ai-dungeon",
