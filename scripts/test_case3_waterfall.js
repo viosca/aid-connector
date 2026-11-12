@@ -28,8 +28,8 @@ async function main() {
     const client = new AIDClient();
     console.log("==================================================================");
     console.log("  WATERFALL CASE 3: Blank Host + Dual Attached Scripts");
-    console.log("  Script 1 (Attached): AID-Getopt Router (3MdjmiOipsOx)");
-    console.log("  Script 2 (Attached): Entity-Cards v2.8.0 (_X5-3ouDjE10)");
+    console.log("  Script 1 (Attached): AID-Getopt Router (Ka2D5sBoDFnn)");
+    console.log("  Script 2 (Attached): Entity-Cards v2.8.0 (05_w3s9zrrvt)");
     console.log("==================================================================");
 
     // 1. Create blank host scenario (NO built-in script)
@@ -46,13 +46,13 @@ async function main() {
     // Ensure scriptsEnabled: true
     await client.updateScenario({ shortId: hostId, scriptsEnabled: true });
 
-    // 2. Attach Script 1: AID-Getopt Router (3MdjmiOipsOx)
-    console.log("2. Attaching Script 1: AID-Getopt Router (3MdjmiOipsOx)...");
-    await client.attachScenarioScript(hostId, "3MdjmiOipsOx");
+    // 2. Attach Script 1: AID-Getopt Router (Ka2D5sBoDFnn)
+    console.log("2. Attaching Script 1: AID-Getopt Router (Ka2D5sBoDFnn)...");
+    await client.attachScenarioScript(hostId, "Ka2D5sBoDFnn");
 
-    // 3. Attach Script 2: Entity-Cards v2.8.0 (_X5-3ouDjE10)
-    console.log("3. Attaching Script 2: Entity-Cards v2.8.0 (_X5-3ouDjE10)...");
-    await client.attachScenarioScript(hostId, "_X5-3ouDjE10");
+    // 3. Attach Script 2: Entity-Cards v2.8.0 (05_w3s9zrrvt)
+    console.log("3. Attaching Script 2: Entity-Cards v2.8.0 (05_w3s9zrrvt)...");
+    await client.attachScenarioScript(hostId, "05_w3s9zrrvt");
 
     const scnScripts = await client.getScenarioScripts(hostId);
     console.log("Attached scripts on Host Scenario:", scnScripts.map(s => `${s.title} (${s.shortId}) builtIn: ${s.builtIn}`));

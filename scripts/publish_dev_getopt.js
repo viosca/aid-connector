@@ -18,7 +18,7 @@ async function main() {
     }
 
     const client = new AIDClient();
-    const shortId = "3MdjmiOipsOx";
+    const shortId = "Ka2D5sBoDFnn";
     console.log(`=== Deploying Latest AID-Modules & AID-Getopt to Script (${shortId}) ===`);
 
     const modLib = fs.readFileSync("C:/git/aid-modules/library-aid-modules.js", "utf8");

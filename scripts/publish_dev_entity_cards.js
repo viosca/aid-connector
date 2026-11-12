@@ -18,7 +18,7 @@ async function main() {
     }
 
     const client = new AIDClient();
-    const shortId = "_X5-3ouDjE10";
+    const shortId = "05_w3s9zrrvt";
     console.log(`=== Deploying Latest Auto-Cards/Entity-Cards to Test Script (${shortId}) ===`);
 
     const sharedLibrary = fs.readFileSync("C:/git/Entity-Cards/src/library.js", "utf8");

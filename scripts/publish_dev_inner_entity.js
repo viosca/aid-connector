@@ -18,7 +18,7 @@ async function main() {
     }
 
     const client = new AIDClient();
-    const shortId = "XXU_L_ethgZg";
+    const shortId = "bL_qS9DsI5wI";
     console.log(`=== Deploying Latest Inner-Entity (Minds-Only) to Test Script (${shortId}) ===`);
 
     const sharedLibrary = fs.readFileSync("C:/git/Inner-Entity/dist/inner-self-minds-only.js", "utf8");

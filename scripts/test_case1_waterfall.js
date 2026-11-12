@@ -101,9 +101,9 @@ modifier(text);`;
     // Ensure scriptsEnabled: true
     await client.updateScenario({ shortId: scnId, scriptsEnabled: true });
 
-    // 3. Attach published Entity-Cards script (_X5-3ouDjE10)
-    console.log("2. Attaching published Entity-Cards script (_X5-3ouDjE10)...");
-    await client.attachScenarioScript(scnId, "_X5-3ouDjE10");
+    // 3. Attach published Entity-Cards script (05_w3s9zrrvt)
+    console.log("2. Attaching published Entity-Cards script (05_w3s9zrrvt)...");
+    await client.attachScenarioScript(scnId, "05_w3s9zrrvt");
 
     const scnScripts = await client.getScenarioScripts(scnId);
     console.log("Scenario scripts:", scnScripts.map(s => `${s.title} (${s.shortId}) builtIn: ${s.builtIn}`));
